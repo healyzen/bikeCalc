@@ -13,14 +13,16 @@ void lower(char* s)
 		s[i] = tolower(s[i]);
 	}
 }
-/*
-void readInput(char* *input, char** *commands, size_t *count)
+
+void readInput(char* input, char** *commands, size_t *count)
 {
 	*count = 0;
-	
+	fgets(input,50+1,stdin);
+	lower(input);
+	*commands = readRow(input, count);
 	
 }
-*/
+
 char** readRow(const char* input, size_t* items)
 {
 	char* word;

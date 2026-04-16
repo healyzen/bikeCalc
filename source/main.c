@@ -23,7 +23,7 @@
 		- added last day-distance to saved file
 		
 	TODO 
-		- English version
+		- English version (language switching
 		- ext. signal handling (SIGINT)
 	WIP
 		- Automated reading from csv
@@ -58,10 +58,7 @@ int main(void)
 	{
 		wprintf(L"(%d): ",saved);
 		
-		count = 0;
-		fgets(input,50+1,stdin);
-		lower(input);
-		commands = readRow(input, &count);
+		readInput(input, &commands, &count);
 		
 		wprintf(L"\n");
 		
