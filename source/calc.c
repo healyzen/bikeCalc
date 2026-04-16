@@ -42,7 +42,6 @@ void add(char** list, size_t count, double* total, double* month, double* day)
 	wprintf(L"ADD:\n距離　");
 	*day = 0;
 	*day += atof(list[1]);
-	
 	if (count == 2)
 	{
 		wprintf(L"+%3.2f", *day);
@@ -66,7 +65,7 @@ void reverse(double* total, double* month, double* day)
 	*day = -(*day);
 	*month += *day;
 	*total += *day;
-	wprintf(L"%3.2f\n", day);
+	wprintf(L"%3.2f\n", *day);
 }
 
 void reset(double* total, double* month, double* day)
@@ -75,7 +74,7 @@ void reset(double* total, double* month, double* day)
 	*total = 0;
 	*month = 0;
 	*day = 0;
-	wprintf(L"距離　%5.2f キロ\n", day);
+	wprintf(L"距離　%5.2f キロ\n", *day);
 }
 
 void help(void)

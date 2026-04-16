@@ -57,7 +57,12 @@ int main(void)
 	while(1)
 	{
 		wprintf(L"(%d): ",saved);
-		readInput(input, commands, &count);
+		
+		count = 0;
+		fgets(input,50+1,stdin);
+		lower(input);
+		commands = readRow(input, &count);
+		
 		wprintf(L"\n");
 		
 		if (strcmp(commands[0],"a") == 0)
