@@ -8,7 +8,10 @@
 #include "calc.h"
 #include "readInp.h"
 
-void readStartData(char* fName, double* total, double* month, double* day)
+
+
+void readStartData(char* fName, double* total, double* month, double* day, 
+					char date[11])
 {
 	size_t len;
 	FILE * file;
@@ -24,6 +27,7 @@ void readStartData(char* fName, double* total, double* month, double* day)
 		*total = 0;
 		*month = 0;
 		*day = 0;
+		strcpy(date,"0000-00-00\0");
 		fclose(file);
 		return;
 	}
@@ -31,10 +35,9 @@ void readStartData(char* fName, double* total, double* month, double* day)
 	*total = atof(readUntil(file, '\n', &len));
 	*month = atof(readUntil(file, '\n', &len));
 	*day = atof(readUntil(file, '\n', &len));
+	strcpy(date, readUntil(file, '\n', &len));
 	fclose(file);
 }
-
-/*void readFromFile()*/
 
 void add(char** list, size_t count, double* total, double* month, double* day)
 {
@@ -94,15 +97,20 @@ void help(void)
 	wprintf(L"EXIT:		e	(exits program)\n\n");
 }
 
-int save(char* fName, double total, double month, double day)
+int save(char* fName, double total, double month, double day, char* date)
 {
+	wchar_t printDate[11] = L"";
 	FILE *file = fopen(fName, "w");
 	
+	mbstowcs(printDate,date,11);
+	printDate[10] = '\0';
+	
 	wprintf(L"SAVING:\n");
+	wprintf(L"日付　%ls\n",printDate);
 	wprintf(L"距離　%5.2f キロ\n", day);
 	if (file != NULL)
 	{
-		fprintf(file,"%f\n%f\n%f",total,month,day);
+		fprintf(file,"%f\n%f\n%f\n%s",total,month,day,date);
 		fclose(file);
 		return 1;
 			
@@ -110,3 +118,5 @@ int save(char* fName, double total, double month, double day)
 		fclose(file);
 	return 0;
 }
+
+/*void readFromFile()*/

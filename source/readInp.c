@@ -5,6 +5,20 @@
 #include <ctype.h>
 #include "readInp.h"
 
+const char* COMMAND_LIST[COMMAND_COUNT] = 
+{
+	"a",
+	"r\n",
+	"reset\n",
+	"mr\n",
+	"ms",
+	"ts",
+	"ds",
+	"e\n",
+	"s\n",
+	"help\n"
+};
+
 void lower(char* s)
 {
 	int i;
@@ -14,13 +28,23 @@ void lower(char* s)
 	}
 }
 
-void readInput(char* input, char** *commands, size_t *count)
+void readInput(char* input, char** *commands, size_t *count, int* cmd)
 {
+	int i;
+	*cmd = -1;
 	*count = 0;
 	fgets(input,50+1,stdin);
 	lower(input);
 	*commands = readRow(input, count);
 	
+	for (i = 0; i < COMMAND_COUNT; i++)
+	{
+		if (strcmp((*commands)[0], COMMAND_LIST[i]) == 0)
+		{
+			*cmd = i;
+			break;
+		}
+	}
 }
 
 char** readRow(const char* input, size_t* items)

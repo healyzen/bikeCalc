@@ -16,6 +16,7 @@
 	
 	VERSION 1.2 CHANGELOG:
 		- cleaned up code
+		- changed to switch case
 	
 	VERSION 1.1 CHANGELOG:
 		- added help function
@@ -30,7 +31,7 @@
 
 */
 
-double VERSION = 1.1;
+double VERSION = 1.2;
 
 int main(void)
 {
@@ -39,9 +40,12 @@ int main(void)
 	double month;
 	double day;
 	size_t count;
+	int cmd = 0;
 	char** commands = {0};
+	char date[11] = "";
 	char input[50] = "";
 	char fName[50] = "";
+	wchar_t printDate[11] = L"0000-00-00\0";
 	
 	if ((_setmode(_fileno(stdout), _O_U16TEXT)) == -1)
 	{
@@ -49,7 +53,13 @@ int main(void)
 	}
 	wprintf(L"bikeCalc v%1.1f\n", VERSION);
 	
-	readStartData(fName, &total, &month, &day);
+	readStartData(fName, &total, &month, &day, date);
+	
+	mbstowcs(printDate, (const char*)date, 11);
+	printDate[10] = L'\0';
+	
+	wprintf(L"LAST SAVED: %ls\n", printDate);
+	
 	
 	wprintf(L"\nCURRENT STATUS:\n");
 	wprintf(L"距離　%5.2f\n今月　%5.2f\n合計　%5.2f\n\n", day, month, total);
@@ -58,87 +68,96 @@ int main(void)
 	{
 		wprintf(L"(%d): ",saved);
 		
-		readInput(input, &commands, &count);
+		readInput(input, &commands, &count, &cmd);
 		
 		wprintf(L"\n");
 		
-		if (strcmp(commands[0],"a") == 0)
+		switch (cmd)
 		{
-			if (count == 1)
-				continue;
-			saved = 0;
-			add(commands, count, &total, &month, &day);
-			
-		} else if (strcmp(commands[0],"r") == 0 ||
-					strcmp(input,"r\n") == 0)
-		{
-			saved = 0;
-			reverse(&total, &month, &day);
-			
-		} else if (strcmp(input,"reset\n") == 0)
-		{
-			saved = 0;
-			reset(&total,&month,&day);
-			
-		} else if (strcmp(commands[0],"mr") == 0 || 
-					strcmp(input,"mr\n") == 0)
-		{
-			saved = 0;
-			wprintf(L"MONTH RESET:\n");
-			month = 0;
-			
-		} else if (strcmp(commands[0],"ms") == 0)
-		{
-			if (count == 1)
-				continue;
-			saved = 0;
-			wprintf(L"SET MONTH:\n");
-			month = atof(commands[1]);
-			
-		} else if (strcmp(commands[0],"ts") == 0)
-		{
-			if (count == 1)
-				continue;
-			saved = 0;
-			wprintf(L"SET TOTAL:\n");
-			total = atof(commands[1]);
-			
-		} else if (strcmp(commands[0],"e") == 0 || 
-					strcmp(input,"e\n") == 0)
-		{
-			if (saved)
-			{
-				freeCommands(commands, count);
-				goto exit;
-			} else 
-			{
-				wprintf(L"!UNSAVED PROGRESS!\n");
-				wprintf(L"ARE YOU SURE (y/n): ");
-				fgets(input,50+1,stdin);
-				if (strcmp(input,"y\n") == 0)
+			case ADD:
+				if (count == 1)
+					goto fault;
+				saved = 0;
+				add(commands, count, &total, &month, &day);
+				break;
+				
+			case REVERSE:
+				saved = 0;
+				reverse(&total, &month, &day);
+				break;
+				
+			case RESET:
+				saved = 0;
+				reset(&total,&month,&day);
+				break;
+				
+			case MONTH_RESET:
+				saved = 0;
+				wprintf(L"MONTH RESET:\n");
+				month = 0;
+				break;
+				
+			case MONTH_SET:
+				if (count == 1)
+					goto fault;
+				saved = 0;
+				wprintf(L"SET MONTH:\n");
+				month = atof(commands[1]);
+				break;
+				
+			case TOTAL_SET:
+				if (count == 1)
+					goto fault;
+				saved = 0;
+				wprintf(L"SET TOTAL:\n");
+				total = atof(commands[1]);
+				break;
+				
+			case DATE_SET:
+				if (count == 1)
+					goto fault;
+				saved = 0;
+				wprintf(L"SET DATE:\n");
+				strncpy(date, commands[1],10);
+				date[10] = '\0';
+				mbstowcs(printDate,date,11);
+				wprintf(L"DATE SET TO: %ls\n\n",printDate);
+				goto fault;
+				break;
+				
+			case EXIT:
+				if (saved)
 				{
 					freeCommands(commands, count);
 					goto exit;
-				} wprintf(L"RETURNING...\n");
-			}
-			
-		} else if (strcmp(commands[0],"s") == 0 || 
-					strcmp(input,"s\n") == 0)
-		{
-			saved = save(fName, total, month,day);
-		} else if (strcmp(commands[0],"help") == 0 || 
-					strcmp(input,"help\n") == 0)
-		{
-			help();
-			continue;
-		} else
-		{
-			freeCommands(commands, count);
-			continue;
+				} else 
+				{
+					wprintf(L"!UNSAVED PROGRESS!\n");
+					wprintf(L"ARE YOU SURE (y/n): ");
+					fgets(input,50+1,stdin);
+					if (strcmp(input,"y\n") == 0)
+					{
+						freeCommands(commands, count);
+						goto exit;
+					} wprintf(L"RETURNING...\n");
+				}
+				break;
+				
+			case SAVE:
+				saved = save(fName,total,month,day,date);
+				break;
+				
+			case HELP:
+				help();
+				break;
+				
+			default:
+				goto fault;	
 		}
-	
+		
 		wprintf(L"今月　%5.2f キロ\n", month);
 		wprintf(L"合計　%5.2f キロ\n\n",total);
+		fault:
 		freeCommands(commands, count);
 	}
 	
