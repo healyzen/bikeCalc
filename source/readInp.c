@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "readInp.h"
 
 void lower(char* s)
@@ -13,12 +14,12 @@ void lower(char* s)
 	}
 }
 
-void readInput(char** commands, size_t *count)
+void readInput(char* input, char** commands, size_t *count)
 {
 	*count = 0;
 	fgets(input,50+1,stdin);
 	lower(input);
-	*commands = readRow(input, count);
+	commands = readRow(input, count);
 }
 
 char** readRow(const char* input, size_t* items)

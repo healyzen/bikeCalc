@@ -1,6 +1,5 @@
 /*READING*/
-void readStartData(const char* fName, 
-					double* total, double* month, double* day);
+void readStartData(char* fName, double* total, double* month, double* day);
 
 /*EDITING*/					
 void add(char** list, size_t count, double* total, double* month, double* day);

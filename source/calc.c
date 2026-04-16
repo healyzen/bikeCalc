@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <wchar.h>
 #include <io.h>
 #include <fcntl.h>
@@ -9,7 +8,7 @@
 #include "calc.h"
 #include "readInp.h"
 
-void readStartData(const char* fName, double* total, double* month, double* day)
+void readStartData(char* fName, double* total, double* month, double* day)
 {
 	size_t len;
 	FILE * file;
@@ -65,8 +64,8 @@ void reverse(double* total, double* month, double* day)
 {
 	wprintf(L"REVERSE:\n");
 	*day = -(*day);
-	month += day;
-	total += day;
+	*month += *day;
+	*total += *day;
 	wprintf(L"%3.2f\n", day);
 }
 

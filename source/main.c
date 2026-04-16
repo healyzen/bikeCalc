@@ -38,9 +38,8 @@ int main(void)
 	double total;
 	double month;
 	double day;
-	char** commands;
 	size_t count;
-	FILE* file;
+	char** commands = {0};
 	char input[50] = "";
 	char fName[50] = "";
 	
@@ -50,7 +49,7 @@ int main(void)
 	}
 	wprintf(L"bikeCalc v%1.1f\n", VERSION);
 	
-	readStartData(fName, total, month, day);
+	readStartData(fName, &total, &month, &day);
 	
 	wprintf(L"\nCURRENT STATUS:\n");
 	wprintf(L"距離　%5.2f\n今月　%5.2f\n合計　%5.2f\n\n", day, month, total);
@@ -58,7 +57,7 @@ int main(void)
 	while(1)
 	{
 		wprintf(L"(%d): ",saved);
-		readInput(&commands, &count);
+		readInput(input, commands, &count);
 		wprintf(L"\n");
 		
 		if (strcmp(commands[0],"a") == 0)
